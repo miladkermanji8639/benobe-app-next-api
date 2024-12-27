@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #2E86C1;
+  --secondary: #084D7C;
+  --background-primary: #F0F8FF;
+  --border-primary: #3333334D;
+  --font-yekan: 'Yekan', sans-serif;
+  --font-yekan-bold: 'Yekan Bold', sans-serif;
+}
+
+

@@ -1,3 +1,4 @@
+/* src/features/login/Login.tsx */
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
@@ -6,7 +7,7 @@ import BackIcon from './images/back.svg';
 import PhoneIcon from './images/phone.svg';
 import PasswordIcon from './images/password.svg';
 import VisibleIcon from './images/visible.svg';
-import "./loading/loading.css";
+import './loading/loading.css';
 
 const Login: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -18,9 +19,10 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [mobileError, setMobileError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [token, setToken] = useState(''); // Step 1: Add state for token
+  const [token, setToken] = useState('');
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const mobileRegex = /^(?!09{1}(\d)\1{8}$)09(?:01|02|03|12|13|14|15|16|18|19|20|21|22|30|33|35|36|38|39|90|91|92|93|94)\d{7}$/;
+  const mobileRegex =
+    /^(?!09{1}(\d)\1{8}$)09(?:01|02|03|12|13|14|15|16|18|19|20|21|22|30|33|35|36|38|39|90|91|92|93|94)\d{7}$/;
 
   useEffect(() => {
     if (step === 2) {
@@ -47,13 +49,17 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const response = await loginRegister(mobile);
-      setToken(response.data.token); // Step 2: Store token from response
+      setToken(response.data.token);
       setMessage('کد تایید با موفقیت به شماره شما ارسال شد!');
       setErrorMessage('');
       setStep(2);
-    } catch (error) {
-      setErrorMessage((error as any).response.data.error);
+    } catch (error: unknown) {
       setMessage('');
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('خطای ناشناخته');
+      }
     } finally {
       setLoading(false);
     }
@@ -69,14 +75,14 @@ const Login: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await loginConfirm(token, enteredOtp); // Step 3: Use the token here
+      const response = await loginConfirm(token, enteredOtp);
 
       if (response.data.success) {
         setStep(3);
       } else {
         setErrorMessage('کد تایید نامعتبر است');
       }
-    } catch (error) {
+    } catch {
       setErrorMessage('کد تایید نامعتبر است');
     } finally {
       setLoading(false);
@@ -104,11 +110,11 @@ const Login: React.FC = () => {
   const handleResendOtp = async () => {
     setLoading(true);
     try {
-      await resendOtp(/* توکن یا اطلاعات لازم برای ارسال مجدد */);
+      await resendOtp(token);
       setMessage('کد تایید مجدداً ارسال شد!');
       setErrorMessage('');
       setTimer(120);
-    } catch (error) {
+    } catch {
       setErrorMessage('ارسال مجدد کد تایید ناموفق بود.');
       setMessage('');
     } finally {
@@ -158,22 +164,29 @@ const Login: React.FC = () => {
                   setMobileError('لطفا شماره موبایل خود را به درستی وارد کنید');
                 }
               }}
-              placeholder="09181234567" maxLength={11}
+              placeholder="09181234567"
+              maxLength={11}
             />
-            {mobileError && <span className="text-red-500 font-semibold">{mobileError}</span>}
+            {mobileError && <span className="font-semibold text-red-500">{mobileError}</span>}
           </div>
           <br />
           <button onClick={handleLoginRegister} disabled={loading}>
-            <div className={`w-[330px] rounded-2xl bg-gradient-to-r from-[#2E86C1] to-[#84CAF9] py-2 text-xl text-white flex justify-center items-center`}>
+            <div
+              className={`flex w-[330px] items-center justify-center rounded-2xl bg-gradient-to-r from-[#2E86C1] to-[#84CAF9] py-2 text-xl text-white`}
+            >
               {loading ? <div className="loader"></div> : 'ادامه'}
             </div>
           </button>
-          {errorMessage && <span className='text-red-500 font-semibold'>{errorMessage}</span>}
+          {errorMessage && <span className="font-semibold text-red-500">{errorMessage}</span>}
           <div className="flex w-full flex-row items-center gap-2 px-4">
-            <input type="checkbox" checked={termsAccepted} onChange={() => setTermsAccepted(!termsAccepted)} />
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={() => setTermsAccepted(!termsAccepted)}
+            />
             <span>
               <a className="text-primary" href="#">
-                شرایط و قوانین{' '}
+                شرایط و قوانین
               </a>
               را خوانده‌ام و پذیرفته‌ام
             </span>
@@ -200,12 +213,16 @@ const Login: React.FC = () => {
           </div>
           <br />
           <br />
-          {!errorMessage && message && <span className='text-green-500 font-semibold'>{message}</span>}
-          <div className="flex w-full flex-row items-center justify-between" dir='ltr'>
+          {!errorMessage && message && (
+            <span className="font-semibold text-green-500">{message}</span>
+          )}
+          <div className="flex w-full flex-row items-center justify-between" dir="ltr">
             {Array.from({ length: 4 }, (_, index) => (
               <input
                 key={index}
-                ref={(el: HTMLInputElement | null) => { otpRefs.current[index] = el; }}
+                ref={(el: HTMLInputElement | null) => {
+                  otpRefs.current[index] = el;
+                }}
                 type="text"
                 className="h-16 w-16 rounded-2xl border border-black/80 text-center font-bold"
                 value={otp[index]}
@@ -217,15 +234,21 @@ const Login: React.FC = () => {
           {errorMessage && <span className="text-red-500">{errorMessage}</span>}
           <br />
           <button onClick={handleOtpSubmit} disabled={loading}>
-            <div className={`w-[330px] rounded-2xl bg-gradient-to-r from-[#2E86C1] to-[#84CAF9] py-2 text-xl text-white flex justify-center items-center`}>
+            <div
+              className={`flex w-[330px] items-center justify-center rounded-2xl bg-gradient-to-r from-[#2E86C1] to-[#84CAF9] py-2 text-xl text-white`}
+            >
               {loading ? <div className="loader"></div> : 'ادامه'}
             </div>
           </button>
           <div className="flex w-full flex-row items-center gap-2 px-4">
             <span className="text-primary">ارسال مجدد کد</span>
-            <span>{Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60}</span>
+            <span>
+              {Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60}
+            </span>
             {timer === 0 ? (
-              <button onClick={handleResendOtp} className="text-blue-500">ارسال مجدد</button>
+              <button onClick={handleResendOtp} className="text-blue-500">
+                ارسال مجدد
+              </button>
             ) : (
               <span className="text-blue-500">{/* متن ارسال مجدد در اینجا */}</span>
             )}

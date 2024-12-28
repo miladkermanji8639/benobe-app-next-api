@@ -1,3 +1,4 @@
+/* src\app\auth\page.tsx */
 import Navbar from '@/features/home/navbar/Navbar';
 import Login from '@/features/login/Login';
 import Image from 'next/image';

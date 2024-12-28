@@ -3,12 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --primary: #2E86C1;
-  --secondary: #084D7C;
-  --background-primary: #F0F8FF;
-  --border-primary: #3333334D;
+  --primary: #2e86c1;
+  --secondary: #084d7c;
+  --background-primary: #f0f8ff;
+  --border-primary: #3333334d;
   --font-yekan: 'Yekan', sans-serif;
   --font-yekan-bold: 'Yekan Bold', sans-serif;
 }
-
-
